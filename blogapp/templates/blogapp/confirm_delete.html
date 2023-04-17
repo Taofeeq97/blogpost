@@ -1,0 +1,23 @@
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<form method="post">{% csrf_token %}
+<p>Are you sure you want to delete "{{ object }}"?</p>
+    <input type="submit" value="Confirm">
+</form>
+
+       <script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var messages = document.getElementById("messages");
+        setTimeout(function() {
+            messages.style.display = 'none';
+        }, 2000);
+    });
+
+       </script>

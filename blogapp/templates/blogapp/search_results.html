@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block css %}
+<style>
+.image {
+  width: 10%;
+  height:80px;
+}
+
+h3, p {
+  flex-basis: 40%;
+}
+
+.containerr {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #fd7e14;;
+  padding: 20px;
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+  <h1>Search Results</h1>
+  {% if object_list %}
+
+    {% for post in object_list %}
+
+      <div class="containerr">
+  <img class="image" src="{{post.picture.url}}">
+  <h3>{{ post.title }}</h3>
+  <p>{{post.details}}</p>
+</div>
+
+    {% endfor %}
+
+  {% else %}
+    <p>No results found.</p>
+  {% endif %}
+{% endblock %}
