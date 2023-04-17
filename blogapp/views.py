@@ -34,7 +34,7 @@ def index(request):
 def post_detail(request, category_id, post_id):
     all_categories = Category.objects.all()
     category = get_object_or_404(Category,pk=category_id)
-    post = get_object_or_404(Post,pk=post_id)
+    post = get_object_or_404(Post,pk=post_id, category_id=category_id)
     post.no_of_views = F('no_of_views') + 1
     post.save()
     post_comment = post.comment_set.all()
