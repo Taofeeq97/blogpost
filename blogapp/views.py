@@ -6,12 +6,47 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db.models import F, Q
 from django.contrib import messages
 
-
 # Local application imports
 from .models import Comment, Category, Post, CommentReply
 
 
 # Create your views here.
+
+class PostMixin:
+    model = Post
+
+    def get_queryset(self):
+        return self.model.objects.all()
+
+
+class PostFormMixin(PostMixin):
+    fields = ['title', 'details', 'picture', 'category']
+    success_message = ''
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, self.get_success_message(form.cleaned_data))
+        return response
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message
+
+
+class FormSuperUserMessageMixin:
+    success_message = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return redirect('index')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, self.get_success_message(form.cleaned_data))
+        return response
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message
 
 
 def index(request):
@@ -33,8 +68,8 @@ def index(request):
 
 def post_detail(request, category_id, post_id):
     all_categories = Category.objects.all()
-    category = get_object_or_404(Category,pk=category_id)
-    post = get_object_or_404(Post,pk=post_id, category_id=category_id)
+    category = get_object_or_404(Category, pk=category_id)
+    post = get_object_or_404(Post, pk=post_id, category_id=category_id)
     post.no_of_views = F('no_of_views') + 1
     post.save()
     post_comment = post.comment_set.all()
@@ -69,64 +104,42 @@ def post_detail(request, category_id, post_id):
     return render(request, 'blogapp/single-page.html', context)
 
 
-class CreatePost(CreateView):
-    model = Post
-    fields = ['title', 'details', 'picture', 'category']
+class CreatePost(PostFormMixin, PostMixin, CreateView):
     template_name = 'blogapp/create_post.html'
+    success_message = 'post created successfully'
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_superuser:
             return redirect('index')
         return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Post created successfully')
-        return super().form_valid(form)
 
-
-class UpdatePost(UpdateView):
-    model = Post
-    fields = ['title', 'details', 'picture', 'category']
+class UpdatePost(PostFormMixin, PostMixin, UpdateView):
     template_name = 'blogapp/update_post.html'
+    success_message = 'post updated successfully'
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_superuser:
             return redirect('index')
         return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Post updated successfully')
-        return super().form_valid(form)
 
-
-class DeletePost(DeleteView):
-    model = Post
+class DeletePost(PostFormMixin, PostMixin, DeleteView):
     template_name = 'blogapp/confirm_delete.html'
     success_url = '/'
+    success_message = 'post deleted successfully'
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_superuser:
             return redirect('index')
         return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        messages.info(self.request, 'Post deleted successfully')
-        return super().form_valid(form)
 
-
-class DeleteComment(DeleteView):
+class DeleteComment(FormSuperUserMessageMixin, DeleteView):
     model = Comment
     template_name = 'blogapp/confirm_delete.html'
     success_url = '/'
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
-            return redirect('index')
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        messages.info(self.request, 'Comment deleted successfully')
-        return super().form_valid(form)
+    success_message = 'comment deleted successfully'
 
 
 def CreateUserAccount(request):
@@ -167,7 +180,7 @@ def contact(request):
         email = request.POST.get('email')
         subject = request.POST.get('subject')
         message = request.POST.get('message')
-        print(name,email,message,subject)
+        print(name, email, message, subject)
     context = {
 
     }

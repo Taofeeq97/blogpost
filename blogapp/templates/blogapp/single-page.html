@@ -143,10 +143,10 @@
   {% if comments.owner %}
     <h4 class="comment-owner">{{comments.owner}}</h4>
   {% else %}
-    <h4 class="comment-owner">Anonymous</h4>
+    <h6 class="comment-owner">Anonymous</h6>
   {% endif %}
-  <p class="comment-details">{{comments.details}}</p>
-  <p class="comment-date">{{comments.created}}</p>
+  <p class="comment-details">{{comments.details}}  <b>{{comments.created}}</b></p>
+  <p class="comment-date"></p>
 
   <button type="button" class="btn btn-primary reply-button" data-bs-toggle="modal" data-bs-target="#exampleModal{{ comments.id }}">
     Reply
