@@ -12,14 +12,12 @@ from .models import Comment, Category, Post, CommentReply
 
 # Create your views here.
 
-class PostMixin:
-    model = Post
-
+class ModelMixin:
     def get_queryset(self):
-        return self.model.objects.all()
+        return super().get_queryset().all()
 
 
-class PostFormMixin(PostMixin):
+class PostFormMixin(ModelMixin):
     fields = ['title', 'details', 'picture', 'category']
     success_message = ''
 
@@ -104,7 +102,8 @@ def post_detail(request, category_id, post_id):
     return render(request, 'blogapp/single-page.html', context)
 
 
-class CreatePost(PostFormMixin, PostMixin, CreateView):
+class CreatePost(PostFormMixin,ModelMixin, CreateView):
+    model = Post
     template_name = 'blogapp/create_post.html'
     success_message = 'post created successfully'
 
@@ -114,7 +113,8 @@ class CreatePost(PostFormMixin, PostMixin, CreateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class UpdatePost(PostFormMixin, PostMixin, UpdateView):
+class UpdatePost(PostFormMixin, ModelMixin, UpdateView):
+    model = Post
     template_name = 'blogapp/update_post.html'
     success_message = 'post updated successfully'
 
@@ -124,7 +124,8 @@ class UpdatePost(PostFormMixin, PostMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class DeletePost(PostFormMixin, PostMixin, DeleteView):
+class DeletePost(PostFormMixin, ModelMixin, DeleteView):
+    model = Post
     template_name = 'blogapp/confirm_delete.html'
     success_url = '/'
     success_message = 'post deleted successfully'
@@ -135,7 +136,7 @@ class DeletePost(PostFormMixin, PostMixin, DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class DeleteComment(FormSuperUserMessageMixin, DeleteView):
+class DeleteComment(ModelMixin,FormSuperUserMessageMixin, DeleteView):
     model = Comment
     template_name = 'blogapp/confirm_delete.html'
     success_url = '/'
@@ -161,7 +162,7 @@ def CreateUserAccount(request):
     return render(request, 'blogapp/create_account.html', context={'form': form})
 
 
-class SearchResultsView(ListView):
+class SearchResultsView(ModelMixin,ListView):
     model = Post
     template_name = "blogapp/search_results.html"
 
