@@ -167,11 +167,9 @@ class SearchResultsView(ListView):
 
     def get_queryset(self):
         query = self.request.GET.get("q")
-        object_list = super().get_queryset()
-        object_list = object_list.filter(
+        return super().get_queryset().filter(
             Q(title__icontains=query)
         )
-        return object_list
 
 
 def contact(request):
