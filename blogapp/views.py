@@ -102,7 +102,7 @@ def post_detail(request, category_id, post_id):
     return render(request, 'blogapp/single-page.html', context)
 
 
-class CreatePost(PostFormMixin,ModelMixin, CreateView):
+class CreatePost(PostFormMixin, ModelMixin, CreateView):
     model = Post
     template_name = 'blogapp/create_post.html'
     success_message = 'post created successfully'
@@ -136,7 +136,7 @@ class DeletePost(PostFormMixin, ModelMixin, DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class DeleteComment(ModelMixin,FormSuperUserMessageMixin, DeleteView):
+class DeleteComment(ModelMixin, FormSuperUserMessageMixin, DeleteView):
     model = Comment
     template_name = 'blogapp/confirm_delete.html'
     success_url = '/'
@@ -162,7 +162,7 @@ def CreateUserAccount(request):
     return render(request, 'blogapp/create_account.html', context={'form': form})
 
 
-class SearchResultsView(ModelMixin,ListView):
+class SearchResultsView(ModelMixin, ListView):
     model = Post
     template_name = "blogapp/search_results.html"
 
