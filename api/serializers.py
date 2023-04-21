@@ -15,11 +15,12 @@ class UserSerializer:
 
 
 class PostSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=False)
+    category = CategorySerializer()
 
     class Meta:
         model = Post
         fields = '__all__'
+
 
 class CommentSerializer(serializers.ModelSerializer):
     owner = UserSerializer()
