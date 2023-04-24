@@ -19,7 +19,7 @@ class Category(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=1000)
     details = models.TextField()
-    picture = models.ImageField(upload_to='media')
+    picture = models.ImageField(upload_to='media', blank=True,null=True)
     is_featured = models.BooleanField(default=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     no_of_views = models.IntegerField(default=0, blank=True)

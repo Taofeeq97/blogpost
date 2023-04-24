@@ -8,14 +8,13 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserSerializer:
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id', 'username', 'email']
 
 
 class PostSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
 
     class Meta:
         model = Post
@@ -23,8 +22,18 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    owner = UserSerializer()
+    owner=UserSerializer(read_only=True)
+    post = PostSerializer(read_only=True)
 
     class Meta:
         model = Comment
+        fields = '__all__'
+
+
+class CommentRepliesSerializer(serializers.ModelSerializer):
+    owner = UserSerializer(read_only=True)
+    comment = CommentSerializer(read_only=True)
+
+    class Meta:
+        model = CommentReply
         fields = '__all__'

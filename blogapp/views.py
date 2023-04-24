@@ -69,9 +69,8 @@ def post_detail(request, category_id, post_id):
     category = get_object_or_404(Category, pk=category_id)
     post = get_object_or_404(Post, pk=post_id, category_id=category_id)
     post.no_of_views = F('no_of_views') + 1
-    post.save()
-    post_comment = post.comment_set.all()
     post.refresh_from_db(fields=['no_of_views'])
+    post_comment = post.comment_set.all()
     if request.method == 'POST':
         if 'comment_form' in request.POST:
             if request.user.is_authenticated:
