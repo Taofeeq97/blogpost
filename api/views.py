@@ -37,6 +37,7 @@ class OwnerPostCreateMixin:
         serializer.save(owner=self.request.user, post=post)
 
 
+
 class PostListView(generics.ListCreateAPIView):
     queryset = Post
     serializer_class = PostSerializer
