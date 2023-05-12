@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from slugify import slugify
 
 
 # Create your models here.
@@ -25,6 +26,11 @@ class Post(models.Model):
     no_of_views = models.IntegerField(default=0, blank=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True, blank=True, null=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('detail', args=[str(self.category_id), str(self.id)])
@@ -63,3 +69,4 @@ class ContactForm(models.Model):
 
     def __str__(self):
         return self.subject
+

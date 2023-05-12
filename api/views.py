@@ -4,6 +4,10 @@ from blogapp.models import Post, CommentReply, Comment, Category
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
+import requests
+from .serializers import WeatherRealtimeSerializer, WeatherForecastSerializer
 
 
 class SingleCommentMixin:
@@ -37,8 +41,7 @@ class OwnerPostCreateMixin:
         serializer.save(owner=self.request.user, post=post)
 
 
-
-class PostListView(generics.ListCreateAPIView):
+class PostListView(generics.ListAPIView):
     queryset = Post
     serializer_class = PostSerializer
 
@@ -131,8 +134,48 @@ class SingleCommentReplyDeleteView(SingleCommentReplyMixin, generics.DestroyAPIV
 
 
 class PostSearchListView(generics.ListAPIView):
+    serializer_class = PostSerializer
     queryset = Post
 
     def get_queryset(self):
-        query = self.kwargs['q']
-        return super().get_queryset().filter(Q(title__icontains=query))
+        query = self.request.query_params.get('q')
+        return super().get_queryset().objects.filter(Q(title__icontains=query))
+
+
+
+class WeatherLocationSearchApiView(APIView):
+    def get(self, request):
+        weather_url = "https://weatherapi-com.p.rapidapi.com/current.json"
+
+        location = self.request.query_params.get('location')
+        url_query = {'q': location}
+
+        headers = {
+            "content-type": "application/octet-stream",
+            "X-RapidAPI-Key": "7613a5777dmshc0a19d85c6372d7p197f98jsn2c004a89fa6d",
+            "X-RapidAPI-Host": "weatherapi-com.p.rapidapi.com"
+        }
+
+        response = requests.get(url=weather_url, params=url_query, headers=headers)
+        serializer = WeatherRealtimeSerializer(response.json())
+        return Response(serializer.data)
+
+
+class WeatherLocationForcastApiView(APIView):
+    def get(self, request):
+        location = self.request.query_params.get('location')
+        date = self.request.query_params.get('date')
+        url = "https://weatherapi-com.p.rapidapi.com/forecast.json"
+
+        querystring = {"q": location, "dt": date}
+
+        headers = {
+            "content-type": "application/octet-stream",
+            "X-RapidAPI-Key": "7613a5777dmshc0a19d85c6372d7p197f98jsn2c004a89fa6d",
+            "X-RapidAPI-Host": "weatherapi-com.p.rapidapi.com"
+        }
+
+        response = requests.get(url, headers=headers, params=querystring)
+        print(response.json())
+        serializer=WeatherForecastSerializer(response.json())
+        return Response(serializer.data)

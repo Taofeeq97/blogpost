@@ -1,11 +1,10 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
     path('blogs/', views.PostListView.as_view()),
-    path('blog/search', views.PostSearchListView.as_view()),
-    path('blogs/<int:pk>/', views.PostDetailView.as_view()),
+    path('blogs/search/', views.PostSearchListView.as_view()),
+    path('blogs/<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
     path('blogs/create/', views.PostCreateView.as_view()),
     path('blogs/<int:pk>/update/', views.PostDetailUpdateView.as_view()),
     path('blogs/<int:pk>/delete/', views.PostDetailDeleteView.as_view()),
@@ -17,8 +16,11 @@ urlpatterns = [
     path('blogs/<int:pk>/comments/<int:comment_id>/delete/', views.SingleCommentDeleteView.as_view()),
     path('blogs/<int:pk>/comments/<int:comment_id>/reply/', views.CommentRepliesView.as_view()),
     path('blogs/<int:pk>/comments/<int:comment_id>/reply/create/', views.SingleCommentReplyCreate.as_view()),
-    path('blogs/<int:pk>/comments/<int:comment_id>/reply/<int:reply_id>/update', views.SingleCommentReplyUpdateView.as_view()),
-    path('blogs/<int:pk>/comments/<int:comment_id>/reply/<int:reply_id>/delete', views.SingleCommentReplyDeleteView.as_view()),
-
+    path('blogs/<int:pk>/comments/<int:comment_id>/reply/<int:reply_id>/update',
+         views.SingleCommentReplyUpdateView.as_view()),
+    path('blogs/<int:pk>/comments/<int:comment_id>/reply/<int:reply_id>/delete',
+         views.SingleCommentReplyDeleteView.as_view()),
+    path('weather/', views.WeatherLocationSearchApiView.as_view()),
+    path('weather/forcast/', views.WeatherLocationForcastApiView.as_view())
 
 ]
